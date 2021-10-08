@@ -1,6 +1,7 @@
-package Database
+package Service
 
 import (
+	"Rest-api/Database"
 	"Rest-api/model"
 	"gorm.io/gorm"
 	"log"
@@ -9,7 +10,7 @@ import (
 
 func GetAllProduct() []model.Product {
 	var products []model.Product
-	doa, err := Get()
+	doa, err := Database.Get()
 	if err != nil {
 		return nil
 	}
@@ -17,20 +18,20 @@ func GetAllProduct() []model.Product {
 	return products
 }
 
-func GetProductById(id string) model.Product {
+func GetProductById(id string) (model.Product, error) {
 	log.Printf("Searching product by id: %s\n", id)
 	var product model.Product
-	doa, err := Get()
+	doa, err := Database.Get()
 	if err != nil {
-		return model.Product{}
+		log.Println(err)
 	}
-	doa.First(&product, id)
-	return product
+	err = doa.First(&product, id).Error
+	return product, err
 }
 
 func AddAllProducts(products []model.Product) error {
 	log.Printf("Updating Following Product\n %s \n", products)
-	doa, err := Get()
+	doa, err := Database.Get()
 	if err != nil {
 		log.Println("Error", err)
 	}
@@ -39,7 +40,7 @@ func AddAllProducts(products []model.Product) error {
 }
 
 func Purchase(purchase model.Purchase) error {
-	dao, err := Get()
+	dao, err := Database.Get()
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -56,11 +57,11 @@ func Purchase(purchase model.Purchase) error {
 func TopFiveProduct() []model.Product {
 	var topfive []model.Product
 	var topfiveid []string
-	dao, err := Get()
+	dao, err := Database.Get()
 	if err != nil {
 		log.Fatalln(err)
 	}
-	dao.Model(&model.Purchase{}).Select("item").Where("purchase_time > ?", time.Now().Add(time.Hour*-10)).Group("item").Order("sum(quantity) desc").Limit(5).Find(&topfiveid)
+	dao.Model(&model.Purchase{}).Select("item").Where("purchase_time > ?", time.Now().Add(time.Hour*-1)).Group("item").Order("sum(quantity) desc").Limit(5).Find(&topfiveid)
 	dao.Model(&model.Product{}).Where("id", topfiveid).Find(&topfive)
 	return topfive
 }
