@@ -7,12 +7,12 @@ import (
 	"log"
 )
 
-var Dao *gorm.DB
+var dao *gorm.DB
 
 func Get() (*gorm.DB, error) {
 	log.Println("Dao get called")
-	if Dao != nil {
-		return Dao, nil
+	if dao != nil {
+		return dao, nil
 	}
 	dsn := "host=localhost user=abhinav password=abhi1946 dbname=shop port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -23,6 +23,6 @@ func Get() (*gorm.DB, error) {
 		db.AutoMigrate(&model.Product{})
 		db.AutoMigrate(&model.Purchase{})
 	}
-	Dao = db
-	return Dao , nil
+	dao = db
+	return dao , nil
 }
