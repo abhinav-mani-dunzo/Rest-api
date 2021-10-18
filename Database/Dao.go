@@ -14,7 +14,7 @@ func Get() (*gorm.DB, error) {
 	if dao != nil {
 		return dao, nil
 	}
-	dsn := "host=localhost user=abhinav password=abhi1946 dbname=shop port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	dsn := "host=db user=abhinav password=abhi1946 dbname=shop port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err!=nil{
 		log.Fatal(err)
